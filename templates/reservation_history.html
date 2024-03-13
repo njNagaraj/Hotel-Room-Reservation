@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Reservation History</title>
+</head>
+
+<body>
+
+    <div class="container mt-4">
+        <h1>Reservation History</h1>
+
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th scope="col">Reservation ID</th>
+                    <th scope="col">Guest Name</th>
+                    <th scope="col">Check-In Date</th>
+                    <th scope="col">Check-Out Date</th>
+                    <th scope="col">Room ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                <tr>
+                    <th scope="row">{{ reservation.id }}</th>
+                    <td>{{ reservation.guest_name }}</td>
+                    <td>{{ reservation.check_in_date }}</td>
+                    <td>{{ reservation.check_out_date }}</td>
+                    <td>{{ reservation.room_id }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</body>
+
+</html>
