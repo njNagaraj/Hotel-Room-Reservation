@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+from flask import jsonify
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -75,6 +78,31 @@ def reservation_history():
 @app.route('/admin')
 def admin_panel():
     return render_template('admin_panel.html', rooms=Room.query.all(), reservations=Reservation.query.all())
+
+@app.route('/search_rooms', methods=['GET', 'POST'])
+def search_rooms():
+    if request.method == 'POST':
+        # Get search parameters from the form
+        date_str = request.form['date']
+        guests = int(request.form['guests'])
+
+        # Convert the date string to a datetime object
+        try:
+            date = datetime.strptime(date_str, '%m/%d/%Y').date()
+        except ValueError:
+            return jsonify({'error': 'Invalid date format. Please use MM/DD/YYYY.'})
+
+        # Query available rooms based on the search parameters
+        available_rooms = Room.query.filter(Room.id.notin_(
+            db.session.query(Reservation.room_id).filter(
+                (Reservation.check_in_date <= date) &
+                (Reservation.check_out_date >= date)
+            )
+        )).all()
+
+        return render_template('search_results.html', rooms=available_rooms, search_date=date, guests=guests)
+
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True, host= '0.0.0.0')
