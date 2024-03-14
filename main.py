@@ -14,7 +14,6 @@ class Room(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   room_number = db.Column(db.Integer, unique=True, nullable=False)
   amenities = db.Column(db.String(255), nullable=False)
-  capacity = db.Column(db.Integer, nullable=False)  # Modify this line
   reservations = db.relationship('Reservation', backref='room', lazy=True)
 
 
@@ -141,19 +140,18 @@ def add_room():
     if request.method == 'POST':
         room_number = request.form['room_number']
         amenities = request.form['amenities']
-        capacity = int(request.form['capacity'])  # Retrieve capacity from the form
 
         existing_room = Room.query.filter_by(room_number=room_number).first()
         if existing_room:
             flash('Room number already exists.', 'danger')
             return redirect(url_for('admin_panel'))
 
-        new_room = Room(room_number=room_number, amenities=amenities, capacity=capacity)  # Add capacity here
         db.session.add(new_room)
         db.session.commit()
 
         flash('Room added successfully!', 'success')
         return redirect(url_for('admin_panel'))
+
 
 
 @app.route('/admin/edit_room/<int:room_id>', methods=['GET', 'POST'])
