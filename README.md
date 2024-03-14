@@ -42,13 +42,13 @@ SQL Alchemy
 sqlite
 
 
-# To run 
+# To run in cmd
 
 (make sure git is installed)
 
 git clone https://github.com/njNagaraj/Hotel-room-reservation.git
 
-then 
+then move to the project directory inside Hotel-room-reservation 
 
 pip install -r requirements.txt
 
