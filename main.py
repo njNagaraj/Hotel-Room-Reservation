@@ -83,26 +83,32 @@ def admin_panel():
 def search_rooms():
     if request.method == 'POST':
         # Get search parameters from the form
-        date_str = request.form['date']
+        start_date_str = request.form['start_date']
+        end_date_str = request.form['end_date']
         guests = int(request.form['guests'])
 
-        # Convert the date string to a datetime object
+        # Convert the date strings to datetime objects
         try:
-            date = datetime.strptime(date_str, '%m/%d/%Y').date()
+            start_date = datetime.strptime(start_date_str, '%m/%d/%Y').date()
+            end_date = datetime.strptime(end_date_str, '%m/%d/%Y').date()
         except ValueError:
             return jsonify({'error': 'Invalid date format. Please use MM/DD/YYYY.'})
+
+        # Check if the end date is after the start date
+        if end_date <= start_date:
+            return jsonify({'error': 'End date must be after the start date.'})
 
         # Query available rooms based on the search parameters
         available_rooms = Room.query.filter(Room.id.notin_(
             db.session.query(Reservation.room_id).filter(
-                (Reservation.check_in_date <= date) &
-                (Reservation.check_out_date >= date)
+                (Reservation.check_in_date <= end_date) &
+                (Reservation.check_out_date >= start_date)
             )
         )).all()
 
-        return render_template('search_results.html', rooms=available_rooms, search_date=date, guests=guests)
+        return render_template('search_results.html', rooms=available_rooms, start_date=start_date, end_date=end_date, guests=guests)
 
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True, host= '0.0.0.0')
+    app.run(debug=True, host= '0.0.0.0', port=8080)
