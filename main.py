@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SECRET_KEY'] = 'your_secret_key' #secret key for flashing messages
+app.config['SECRET_KEY'] = 'your_secret_key' # Add a secret key for flashing messages
 db = SQLAlchemy(app)
 bcrypt = Bcrypt()
 
@@ -54,11 +54,13 @@ def main():
 def index():
     return render_template('index.html', rooms=Room.query.all())
 
+# Room details route with comments
 @app.route('/room/<int:room_id>')
 def room_details(room_id):
     room = Room.query.get(room_id)
     return render_template('room_details.html', room=room)
 
+# Reservation form route with comments
 @app.route('/reservation_form', methods=['GET', 'POST'])
 def reservation_form():
     if request.method == 'POST':
@@ -118,11 +120,7 @@ def reservation_form():
 
     return render_template('reservation_form.html', rooms=Room.query.all())
 
-@app.route('/reservation/<int:reservation_id>')
-def view_reservation(reservation_id):
-    reservation = Reservation.query.get_or_404(reservation_id)
-    return render_template('view_reservation.html', reservation=reservation)
-
+# Reservation history route with comments
 @app.route('/reservation/history')
 def reservation_history():
     if 'logged_in_user' in session:
@@ -138,10 +136,12 @@ def reservation_history():
         flash('Please log in to view your reservation history.', 'danger')
         return redirect(url_for('customer_login', next=request.url))  # Redirect back to reservation history after successful login
 
+# Admin panel route
 @app.route('/admin')
 def admin_panel():
     return render_template('admin_panel.html', rooms=Room.query.all(), reservations=Reservation.query.all())
 
+# Search rooms route with comments
 @app.route('/search_rooms', methods=['GET', 'POST'])
 def search_rooms():
     if request.method == 'POST':
@@ -182,6 +182,7 @@ def search_rooms():
 
     return redirect(url_for('index'))
 
+# Add room route
 @app.route('/admin/add_room', methods=['POST'])
 def add_room():
     if request.method == 'POST':
@@ -201,6 +202,7 @@ def add_room():
         flash('Room added successfully!', 'success')
         return redirect(url_for('admin_panel'))
 
+# Edit room route
 @app.route('/admin/edit_room/<int:room_id>', methods=['GET', 'POST'])
 def edit_room(room_id):
     room = Room.query.get_or_404(room_id)
@@ -216,6 +218,7 @@ def edit_room(room_id):
 
     return render_template('edit_room.html', room=room)
 
+# Delete room route
 @app.route('/admin/delete_room/<int:room_id>', methods=['POST'])
 def delete_room(room_id):
     room = Room.query.get_or_404(room_id)
@@ -225,6 +228,7 @@ def delete_room(room_id):
     flash('Room deleted successfully!', 'success')
     return redirect(url_for('admin_panel'))
 
+# New customer route
 @app.route('/new-customer', methods=['GET', 'POST'])
 def new_customer():
     if request.method == 'POST':
@@ -241,7 +245,7 @@ def new_customer():
             flash("Password and Confirm Password do not match. Please try again.", 'danger')
             return redirect(url_for('new_customer'))
 
-        #dehashing and storing password to validate
+        # Hashing and storing password to validate
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         new_customer = Customer(username=username, password=hashed_password)
@@ -253,6 +257,7 @@ def new_customer():
 
     return render_template('new_customer.html')
 
+# Cancel reservation route
 @app.route('/reservation/cancel/<int:reservation_id>', methods=['POST'])
 def cancel_reservation(reservation_id):
     reservation = Reservation.query.get_or_404(reservation_id)
@@ -262,6 +267,7 @@ def cancel_reservation(reservation_id):
     flash('Reservation canceled successfully!', 'success')
     return redirect(url_for('reservation_history'))
 
+# Customer login route
 @app.route('/customer_login', methods=['GET', 'POST'])
 def customer_login():
     if request.method == 'POST':
@@ -283,6 +289,7 @@ def customer_login():
 
     return render_template('customer_login.html')
 
+# Admin login route
 ADMIN_USERNAME = 'admin'
 ADMIN_PASSWORD = 'admin'
 
@@ -300,6 +307,7 @@ def admin_login():
 
     return render_template('admin_login.html', titre="Admin Login")
 
+# User logout route
 @app.route('/user_logout', methods=['POST'])
 def user_logout():
     session.pop('logged_in_user', None)
