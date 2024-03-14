@@ -18,13 +18,12 @@ class Room(db.Model):
     reservations = db.relationship('Reservation', backref='room', lazy=True)
 
 class Reservation(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  guest_name = db.Column(db.String(255), nullable=False)
-  check_in_date = db.Column(db.Date, nullable=False)
-  check_out_date = db.Column(db.Date, nullable=False)
-  room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
-  customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)  # Add this line
-
+    id = db.Column(db.Integer, primary_key=True)
+    guest_name = db.Column(db.String(255), nullable=False)
+    check_in_date = db.Column(db.Date, nullable=False)
+    check_out_date = db.Column(db.Date, nullable=False)
+    room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)  # Add this line
 
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,7 +43,6 @@ with app.app_context():
         sample_room = Room(room_number=room_number, amenities='Free Wi-Fi', capacity=2)
         db.session.add(sample_room)
         db.session.commit()
-      
 
 # Routes
 @app.route('/', methods=['GET', 'POST'])
@@ -57,32 +55,8 @@ def index():
 
 @app.route('/room/<int:room_id>')
 def room_details(room_id):
-    # Retrieve start and end dates from query parameters
-    start_date_str = request.args.get('start_date')
-    end_date_str = request.args.get('end_date')
-
-    # Check if both start and end dates are provided
-    if not start_date_str or not end_date_str:
-        flash('Please provide both start date and end date.', 'danger')
-        return redirect(url_for('index'))  # Adjust the redirection as per your route
-
-    # Convert date strings to datetime objects
-    try:
-        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-        end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-    except ValueError:
-        flash("Invalid date format.", "danger")
-        return redirect(url_for('index'))  # Adjust the redirection as per your route
-
-    # Check if start date is less than end date
-    if start_date >= end_date:
-        flash("Start date must be less than end date.", "danger")
-        return redirect(url_for('index'))  # Adjust the redirection as per your route
-
-    # Fetch room details
     room = Room.query.get(room_id)
     return render_template('room_details.html', room=room)
-
 
 @app.route('/reservation_form', methods=['GET', 'POST'])
 def reservation_form():
@@ -91,13 +65,13 @@ def reservation_form():
         if 'logged_in_user' not in session:
             flash("Please log in to make a reservation.", "danger")
             return redirect(url_for('customer_login'))
-  
+
         # Get form data
         guest_name = request.form['guest_name']
         check_in_date_str = request.form['check_in_date']
         check_out_date_str = request.form['check_out_date']
         room_id = request.form['room_id']
-  
+
         # Parse dates
         try:
             check_in_date = datetime.strptime(check_in_date_str, '%Y-%m-%d').date()
@@ -105,12 +79,12 @@ def reservation_form():
         except ValueError:
             flash("Invalid date format.", "danger")
             return redirect(url_for('reservation_form'))
-  
+
         # Check if end date is greater than start date
         if check_out_date <= check_in_date:
             flash("End date must be greater than start date.", "danger")
             return redirect(url_for('reservation_form'))
-  
+
         # Check if the room is available for the provided dates
         room = Room.query.get(room_id)
         if room:
@@ -123,7 +97,7 @@ def reservation_form():
         else:
             flash("Room not found.", "danger")
             return redirect(url_for('reservation_form'))
-  
+
         # Make the reservation
         if 'logged_in_user' in session:
             logged_in_user = session['logged_in_user']
@@ -140,9 +114,8 @@ def reservation_form():
         else:
             flash('Please log in to make a reservation.', 'danger')
             return redirect(url_for('customer_login'))
-  
-    return render_template('reservation_form.html', rooms=Room.query.all())
 
+    return render_template('reservation_form.html', rooms=Room.query.all())
 
 
 @app.route('/reservation/<int:reservation_id>')
@@ -161,10 +134,11 @@ def reservation_history():
             return render_template('reservation_history.html', reservations=reservations)
         else:
             flash('User not found.', 'danger')
-            return redirect(url_for('customer_login'))
+            return redirect(url_for('customer_login', next=request.url))  # Redirect back to reservation history after successful login
     else:
         flash('Please log in to view your reservation history.', 'danger')
-        return redirect(url_for('customer_login'))
+        return redirect(url_for('customer_login', next=request.url))  # Redirect back to reservation history after successful login
+
 
 
 @app.route('/admin')
@@ -327,8 +301,7 @@ def admin_login():
         else:
             flash("Incorrect admin username or password. Please try again.", 'danger')
 
-    return render_template('admin_login.html')
+    return render_template('admin_login.html', titre="Admin Login")
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
-
