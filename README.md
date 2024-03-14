@@ -46,7 +46,7 @@ sqlite
 
 (make sure git is installed)
 
-git clone repo-link
+git clone https://github.com/njNagaraj/Hotel-room-reservation.git
 
 then 
 
