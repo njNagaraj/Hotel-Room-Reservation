@@ -1,9 +1,9 @@
-#Hotel reservation system
+# Hotel reservation system
 
-#Overview
+# Overview
 The goal of this project is to create a hotel reservation system that allows customers to search for available rooms and make reservations.
 
-#Functionality
+# Functionality
 Customer
 As a customer, I can search for available rooms based on the date range and number of guests.
 As a customer, I can view room details and amenities before making a reservation.
@@ -21,12 +21,13 @@ As an admin, I can view a list of reservations and cancel reservations if needed
 
 (the admin is able to login with his credential hear username = admin and password = admin and able to see edit add room details and ale to cancel the customer registration)
 
-#TOOLS USED
+# TOOLS USED
 Flask
 SQL Alchemy
 sqlite
 
-To run (make sure git is installed)
+# To run 
+(make sure git is installed)
 git clone repo-link
 then 
 pip install -r requirements.txt
