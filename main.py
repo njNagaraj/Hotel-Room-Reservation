@@ -46,6 +46,7 @@ with app.app_context():
 
 # Routes
 @app.route('/', methods=['GET', 'POST'])
+@app.route('/main', methods=['GET', 'POST'])
 def main():
     return render_template('main.html')
 
@@ -302,6 +303,13 @@ def admin_login():
             flash("Incorrect admin username or password. Please try again.", 'danger')
 
     return render_template('admin_login.html', titre="Admin Login")
+
+@app.route('/user_logout', methods=['POST'])
+def user_logout():
+    session.pop('logged_in_user', None)
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('main'))
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)

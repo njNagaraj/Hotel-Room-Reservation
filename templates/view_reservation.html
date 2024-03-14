@@ -44,7 +44,12 @@
         </form>
 
         <!-- View Reservation Button -->
-      <a href="{{ url_for('reservation_history') }}" class="btn btn-primary mt-3">View Reservations</a>
+        <a href="{{ url_for('reservation_history') }}" class="btn btn-primary mt-3">View Reservations</a>
+        
+        <!-- Logout Button -->
+        <form action="{{ url_for('user_logout') }}" method="post">
+            <button type="submit" class="btn btn-secondary mt-3">Logout</button>
+        </form>
 
     </div>
 
