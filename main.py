@@ -11,10 +11,12 @@ bcrypt = Bcrypt()
 
 # Define the Room and Reservation models
 class Room(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    room_number = db.Column(db.Integer, unique=True, nullable=False)
-    amenities = db.Column(db.String(255), nullable=False)
-    reservations = db.relationship('Reservation', backref='room', lazy=True)
+  id = db.Column(db.Integer, primary_key=True)
+  room_number = db.Column(db.Integer, unique=True, nullable=False)
+  amenities = db.Column(db.String(255), nullable=False)
+  capacity = db.Column(db.Integer, nullable=False)  # Modify this line
+  reservations = db.relationship('Reservation', backref='room', lazy=True)
+
 
 class Reservation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -48,7 +50,7 @@ with app.app_context():
 def main_index():
     return render_template('main_index.html')
 
-@app.route('/index')
+@app.route('/index', methods=['GET', 'POST'])
 def index():
     return render_template('index.html', rooms=Room.query.all())
 
@@ -61,7 +63,7 @@ def room_details(room_id):
 def reservation_form():
     if request.method == 'POST':
         if 'logged_in_user' not in session:
-            flash("Please log in to make a reservation.", "error")
+            flash("Please log in to make a reservation.", "danger")
             return redirect(url_for('customer_login'))
 
         guest_name = request.form['guest_name']
@@ -139,13 +141,14 @@ def add_room():
     if request.method == 'POST':
         room_number = request.form['room_number']
         amenities = request.form['amenities']
+        capacity = int(request.form['capacity'])  # Retrieve capacity from the form
 
         existing_room = Room.query.filter_by(room_number=room_number).first()
         if existing_room:
             flash('Room number already exists.', 'danger')
             return redirect(url_for('admin_panel'))
 
-        new_room = Room(room_number=room_number, amenities=amenities)
+        new_room = Room(room_number=room_number, amenities=amenities, capacity=capacity)  # Add capacity here
         db.session.add(new_room)
         db.session.commit()
 
@@ -194,7 +197,7 @@ def new_customer():
 
         existing_customer = Customer.query.filter_by(username=username).first()
         if existing_customer:
-            flash("An account with this username already exists. Please choose a different username.", 'error')
+            flash("An account with this username already exists. Please choose a different username.", 'danger')
             return redirect(url_for('new_customer'))
 
         if password != confirm_password:
@@ -212,7 +215,7 @@ def new_customer():
 
     return render_template('new_customer.html')
 
-@app.route('/customer-login', methods=['GET', 'POST'])
+@app.route('/customer_login', methods=['GET', 'POST'])
 def customer_login():
     if request.method == 'POST':
         username = request.form['username']
@@ -236,9 +239,9 @@ def customer_login():
                     return redirect(url_for('index'))
 
             else:
-                flash("Incorrect password. Please try again.", 'error')
+                flash("Incorrect password. Please try again.", 'danger')
         else:
-            flash("Username not found. Please create an account first.", 'error')
+            flash("Username not found. Please create an account first.", 'danger')
 
     # If the request method is GET or login fails, redirect back to the login page
     # Store the previous page URL in the session before redirecting
@@ -258,7 +261,7 @@ def admin_login():
             flash("Admin login successful!", "success")
             return redirect(url_for('admin_panel'))
         else:
-            flash("Incorrect admin username or password. Please try again.", 'error')
+            flash("Incorrect admin username or password. Please try again.", 'danger')
 
     return render_template('admin_login.html')
 
