@@ -5,11 +5,11 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SECRET_KEY'] = 'your_secret_key' # Add a secret key for flashing messages
+app.config['SECRET_KEY'] = 'your_secret_key' #secret key for flashing messages
 db = SQLAlchemy(app)
 bcrypt = Bcrypt()
 
-# Define the Room and Reservation models
+# Room and Reservation models
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     room_number = db.Column(db.Integer, unique=True, nullable=False)
@@ -23,18 +23,18 @@ class Reservation(db.Model):
     check_in_date = db.Column(db.Date, nullable=False)
     check_out_date = db.Column(db.Date, nullable=False)
     room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)  # Add this line
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False) 
 
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
 
-# Create tables in the database
+# Creating tables in the database
 with app.app_context():
     db.create_all()
 
-# Sample data for demonstration purposes
+# creating one room at starting
 with app.app_context():
     room_number = 101
     existing_room = Room.query.filter_by(room_number=room_number).first()
@@ -118,12 +118,10 @@ def reservation_form():
 
     return render_template('reservation_form.html', rooms=Room.query.all())
 
-
 @app.route('/reservation/<int:reservation_id>')
 def view_reservation(reservation_id):
     reservation = Reservation.query.get_or_404(reservation_id)
     return render_template('view_reservation.html', reservation=reservation)
-
 
 @app.route('/reservation/history')
 def reservation_history():
@@ -139,8 +137,6 @@ def reservation_history():
     else:
         flash('Please log in to view your reservation history.', 'danger')
         return redirect(url_for('customer_login', next=request.url))  # Redirect back to reservation history after successful login
-
-
 
 @app.route('/admin')
 def admin_panel():
@@ -205,7 +201,6 @@ def add_room():
         flash('Room added successfully!', 'success')
         return redirect(url_for('admin_panel'))
 
-
 @app.route('/admin/edit_room/<int:room_id>', methods=['GET', 'POST'])
 def edit_room(room_id):
     room = Room.query.get_or_404(room_id)
@@ -246,6 +241,7 @@ def new_customer():
             flash("Password and Confirm Password do not match. Please try again.", 'danger')
             return redirect(url_for('new_customer'))
 
+        #dehashing and storing password to validate
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         new_customer = Customer(username=username, password=hashed_password)
