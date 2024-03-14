@@ -58,4 +58,4 @@ flask --app main run
 
 # note
 
-ignore the poetry pyproject files as i'm developed it in replit.com they come automatically when i commit without these files also the code will run perfectly
+ignore the .replit, poetry.lock, pyproject.toml files as i'm developed it in replit.com they come automatically when i commit without these files also the code will run perfectly
