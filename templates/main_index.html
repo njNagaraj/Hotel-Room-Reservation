@@ -19,13 +19,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Customer Login</a>
+                    <a class="nav-link" href="{{ url_for('customer_login')}}">Customer Login</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">New Customer Sign Up</a>
+                    <a class="nav-link" href="{{ url_for('new_customer')}}">Customer Sign Up</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Admin Login</a>
+                    <a class="nav-link" href="{{ url_for('admin_login')}}">Admin Login</a>
                 </li>
             </ul>
         </div>
@@ -34,7 +34,7 @@
     <div class="container mt-4 text-center">
         <h1>Welcome to Hotel Room Reservation</h1>
         <p>Book your hotel room now</p>
-        <a href="{{ url_for('index.html')}}" class="btn btn-primary btn-lg">Book Hotel Room Now</a>
+        <a href="{{ url_for('index')}}" class="btn btn-primary btn-lg">Book Hotel Room Now</a>
     </div>
 
     <!-- Bootstrap JS and jQuery dependencies (add them at the end of the body for better performance) -->
