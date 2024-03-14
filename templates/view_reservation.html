@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Reservation Details</title>
+</head>
+
+<body>
+
+    <div class="container mt-4">
+        <h1>Reservation Details</h1>
+
+        <table class="table mt-4">
+            <tbody>
+                <tr>
+                    <th scope="row">Reservation ID:</th>
+                    <td>{{ reservation.id }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Guest Name:</th>
+                    <td>{{ reservation.guest_name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Check-In Date:</th>
+                    <td>{{ reservation.check_in_date }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Check-Out Date:</th>
+                    <td>{{ reservation.check_out_date }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Room ID:</th>
+                    <td>{{ reservation.room_id }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <form action="{{ url_for('cancel_reservation', reservation_id=reservation.id) }}" method="post">
+            <button type="submit" class="btn btn-danger">Cancel Reservation</button>
+        </form>
+
+        <!-- View Reservation Button -->
+      <a href="{{ url_for('reservation_history') }}" class="btn btn-primary mt-3">View Reservations</a>
+
+    </div>
+
+</body>
+
+</html>

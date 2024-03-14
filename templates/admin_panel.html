@@ -17,7 +17,7 @@
                     <h1>Admin Panel</h1>
                 </div>
                 <div class="col-md-6 text-right">
-                  <form action="{{ url_for('main_index') }}" method="post">
+                  <form action="{{ url_for('main') }}" method="post">
                       <button type="submit" class="btn btn-danger">Logout</button>
                   </form>
                 </div>
@@ -31,7 +31,7 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}" role="alert">
+                    <div class="alert alert-success" role="alert">
                         {{ message }}
                     </div>
                 {% endfor %}

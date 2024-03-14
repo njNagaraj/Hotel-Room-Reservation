@@ -1,34 +1,35 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify
 from flask_bcrypt import Bcrypt
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SECRET_KEY'] = 'your_secret_key'  # Add a secret key for flashing messages
+app.config['SECRET_KEY'] = 'your_secret_key' # Add a secret key for flashing messages
 db = SQLAlchemy(app)
 bcrypt = Bcrypt()
 
 # Define the Room and Reservation models
 class Room(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  room_number = db.Column(db.Integer, unique=True, nullable=False)
-  amenities = db.Column(db.String(255), nullable=False)
-  reservations = db.relationship('Reservation', backref='room', lazy=True)
-
+    id = db.Column(db.Integer, primary_key=True)
+    room_number = db.Column(db.Integer, unique=True, nullable=False)
+    amenities = db.Column(db.String(255), nullable=False)
+    capacity = db.Column(db.Integer, nullable=False)
+    reservations = db.relationship('Reservation', backref='room', lazy=True)
 
 class Reservation(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    guest_name = db.Column(db.String(255), nullable=False)
-    check_in_date = db.Column(db.Date, nullable=False)
-    check_out_date = db.Column(db.Date, nullable=False)
-    room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+  id = db.Column(db.Integer, primary_key=True)
+  guest_name = db.Column(db.String(255), nullable=False)
+  check_in_date = db.Column(db.Date, nullable=False)
+  check_out_date = db.Column(db.Date, nullable=False)
+  room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+  customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)  # Add this line
+
 
 class Customer(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  username = db.Column(db.String(255), unique=True, nullable=False)
-  password = db.Column(db.String(255), nullable=False)
-
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(255), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
 
 # Create tables in the database
 with app.app_context():
@@ -40,14 +41,15 @@ with app.app_context():
     existing_room = Room.query.filter_by(room_number=room_number).first()
 
     if not existing_room:
-        sample_room = Room(room_number=room_number, amenities='Free Wi-Fi')
+        sample_room = Room(room_number=room_number, amenities='Free Wi-Fi', capacity=2)
         db.session.add(sample_room)
         db.session.commit()
+      
 
 # Routes
 @app.route('/', methods=['GET', 'POST'])
-def main_index():
-    return render_template('main_index.html')
+def main():
+    return render_template('main.html')
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
@@ -55,41 +57,115 @@ def index():
 
 @app.route('/room/<int:room_id>')
 def room_details(room_id):
+    # Retrieve start and end dates from query parameters
+    start_date_str = request.args.get('start_date')
+    end_date_str = request.args.get('end_date')
+
+    # Check if both start and end dates are provided
+    if not start_date_str or not end_date_str:
+        flash('Please provide both start date and end date.', 'danger')
+        return redirect(url_for('index'))  # Adjust the redirection as per your route
+
+    # Convert date strings to datetime objects
+    try:
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+    except ValueError:
+        flash("Invalid date format.", "danger")
+        return redirect(url_for('index'))  # Adjust the redirection as per your route
+
+    # Check if start date is less than end date
+    if start_date >= end_date:
+        flash("Start date must be less than end date.", "danger")
+        return redirect(url_for('index'))  # Adjust the redirection as per your route
+
+    # Fetch room details
     room = Room.query.get(room_id)
     return render_template('room_details.html', room=room)
 
-@app.route('/reservation/new', methods=['GET', 'POST'])
+
+@app.route('/reservation_form', methods=['GET', 'POST'])
 def reservation_form():
     if request.method == 'POST':
+        # Check if the user is logged in
         if 'logged_in_user' not in session:
             flash("Please log in to make a reservation.", "danger")
             return redirect(url_for('customer_login'))
-
+  
+        # Get form data
         guest_name = request.form['guest_name']
         check_in_date_str = request.form['check_in_date']
         check_out_date_str = request.form['check_out_date']
         room_id = request.form['room_id']
-
-        check_in_date = datetime.strptime(check_in_date_str, '%Y-%m-%d').date()
-        check_out_date = datetime.strptime(check_out_date_str, '%Y-%m-%d').date()
-
-        reservation = Reservation(guest_name=guest_name,
-                                  check_in_date=check_in_date,
-                                  check_out_date=check_out_date,
-                                  room_id=room_id)
-
-        db.session.add(reservation)
-        db.session.commit()
-
-        flash("Reservation made successfully!", "success")
-        return redirect(url_for('index'))
-
+  
+        # Parse dates
+        try:
+            check_in_date = datetime.strptime(check_in_date_str, '%Y-%m-%d').date()
+            check_out_date = datetime.strptime(check_out_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            flash("Invalid date format.", "danger")
+            return redirect(url_for('reservation_form'))
+  
+        # Check if end date is greater than start date
+        if check_out_date <= check_in_date:
+            flash("End date must be greater than start date.", "danger")
+            return redirect(url_for('reservation_form'))
+  
+        # Check if the room is available for the provided dates
+        room = Room.query.get(room_id)
+        if room:
+            reservations = Reservation.query.filter_by(room_id=room_id).all()
+            for reservation in reservations:
+                if (check_in_date >= reservation.check_in_date and check_in_date <= reservation.check_out_date) or \
+                   (check_out_date >= reservation.check_in_date and check_out_date <= reservation.check_out_date):
+                    flash("This room is already booked for the selected dates.", "danger")
+                    return redirect(url_for('reservation_form'))
+        else:
+            flash("Room not found.", "danger")
+            return redirect(url_for('reservation_form'))
+  
+        # Make the reservation
+        if 'logged_in_user' in session:
+            logged_in_user = session['logged_in_user']
+            customer = Customer.query.filter_by(username=logged_in_user).first()
+            if customer:
+                reservation = Reservation(guest_name=guest_name, check_in_date=check_in_date, check_out_date=check_out_date, room_id=room_id, customer_id=customer.id)
+                db.session.add(reservation)
+                db.session.commit()
+                flash("Reservation made successfully!", "success")
+                return redirect(url_for('view_reservation', reservation_id=reservation.id))
+            else:
+                flash('User not found.', 'danger')
+                return redirect(url_for('customer_login'))
+        else:
+            flash('Please log in to make a reservation.', 'danger')
+            return redirect(url_for('customer_login'))
+  
     return render_template('reservation_form.html', rooms=Room.query.all())
+
+
+
+@app.route('/reservation/<int:reservation_id>')
+def view_reservation(reservation_id):
+    reservation = Reservation.query.get_or_404(reservation_id)
+    return render_template('view_reservation.html', reservation=reservation)
+
 
 @app.route('/reservation/history')
 def reservation_history():
-    reservations = Reservation.query.all()
-    return render_template('reservation_history.html', reservations=reservations)
+    if 'logged_in_user' in session:
+        logged_in_user = session['logged_in_user']
+        customer = Customer.query.filter_by(username=logged_in_user).first()
+        if customer:
+            reservations = Reservation.query.filter_by(customer_id=customer.id).all()
+            return render_template('reservation_history.html', reservations=reservations)
+        else:
+            flash('User not found.', 'danger')
+            return redirect(url_for('customer_login'))
+    else:
+        flash('Please log in to view your reservation history.', 'danger')
+        return redirect(url_for('customer_login'))
+
 
 @app.route('/admin')
 def admin_panel():
@@ -140,18 +216,19 @@ def add_room():
     if request.method == 'POST':
         room_number = request.form['room_number']
         amenities = request.form['amenities']
+        capacity = int(request.form['capacity'])
 
         existing_room = Room.query.filter_by(room_number=room_number).first()
         if existing_room:
             flash('Room number already exists.', 'danger')
             return redirect(url_for('admin_panel'))
 
+        new_room = Room(room_number=room_number, amenities=amenities, capacity=capacity)
         db.session.add(new_room)
         db.session.commit()
 
         flash('Room added successfully!', 'success')
         return redirect(url_for('admin_panel'))
-
 
 
 @app.route('/admin/edit_room/<int:room_id>', methods=['GET', 'POST'])
@@ -176,14 +253,6 @@ def delete_room(room_id):
     db.session.commit()
 
     flash('Room deleted successfully!', 'success')
-    return redirect(url_for('admin_panel'))
-
-@app.route('/cancel_reservation/<int:reservation_id>', methods=['POST'])
-def cancel_reservation(reservation_id):
-    reservation = Reservation.query.get_or_404(reservation_id)
-    db.session.delete(reservation)
-    db.session.commit()
-    flash('Reservation canceled successfully!', 'success')
     return redirect(url_for('admin_panel'))
 
 @app.route('/new-customer', methods=['GET', 'POST'])
@@ -213,6 +282,15 @@ def new_customer():
 
     return render_template('new_customer.html')
 
+@app.route('/reservation/cancel/<int:reservation_id>', methods=['POST'])
+def cancel_reservation(reservation_id):
+    reservation = Reservation.query.get_or_404(reservation_id)
+    db.session.delete(reservation)
+    db.session.commit()
+
+    flash('Reservation canceled successfully!', 'success')
+    return redirect(url_for('reservation_history'))
+
 @app.route('/customer_login', methods=['GET', 'POST'])
 def customer_login():
     if request.method == 'POST':
@@ -226,24 +304,12 @@ def customer_login():
             if bcrypt.check_password_hash(hashed_password, password):
                 session['logged_in_user'] = username
                 flash("Your login was successful!", "success")
-
-                # Retrieve the previous page URL from the session
-                prev_page = session.get('prev_page')
-                if prev_page:
-                    session.pop('prev_page')  # Clear the previous page URL from the session
-                    return redirect(prev_page)
-                else:
-                    # If no previous page is stored, redirect to a default page
-                    return redirect(url_for('index'))
-
+                return redirect(url_for('index'))
             else:
                 flash("Incorrect password. Please try again.", 'danger')
         else:
             flash("Username not found. Please create an account first.", 'danger')
 
-    # If the request method is GET or login fails, redirect back to the login page
-    # Store the previous page URL in the session before redirecting
-    session['prev_page'] = request.referrer
     return render_template('customer_login.html')
 
 ADMIN_USERNAME = 'admin'
@@ -265,3 +331,4 @@ def admin_login():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
+
