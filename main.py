@@ -81,12 +81,12 @@ def reservation_form():
             check_out_date = datetime.strptime(check_out_date_str, '%Y-%m-%d').date()
         except ValueError:
             flash("Invalid date format.", "danger")
-            return redirect(url_for('reservation_form'))
+            return redirect(url_for('room_details', room_id=room_id))
 
         # Check if end date is greater than start date
         if check_out_date <= check_in_date:
             flash("End date must be greater than start date.", "danger")
-            return redirect(url_for('reservation_form'))
+            return redirect(url_for('room_details', room_id=room_id))
 
         # Check if the room is available for the provided dates
         room = Room.query.get(room_id)
@@ -120,6 +120,12 @@ def reservation_form():
 
     return render_template('reservation_form.html', rooms=Room.query.all())
 
+@app.route('/reservation/<int:reservation_id>')
+def view_reservation(reservation_id):
+    reservation = Reservation.query.get_or_404(reservation_id)
+    return render_template('view_reservation.html', reservation=reservation)
+
+
 # Reservation history route with comments
 @app.route('/reservation/history')
 def reservation_history():
@@ -137,7 +143,8 @@ def reservation_history():
         return redirect(url_for('customer_login', next=request.url))  # Redirect back to reservation history after successful login
 
 # Admin panel route
-@app.route('/admin')
+
+@app.route('/admin_panel')
 def admin_panel():
     return render_template('admin_panel.html', rooms=Room.query.all(), reservations=Reservation.query.all())
 
@@ -245,7 +252,8 @@ def new_customer():
             flash("Password and Confirm Password do not match. Please try again.", 'danger')
             return redirect(url_for('new_customer'))
 
-        # Hashing and storing password to validate
+
+        # DeHashing and storing password to validate
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         new_customer = Customer(username=username, password=hashed_password)
@@ -265,7 +273,7 @@ def cancel_reservation(reservation_id):
     db.session.commit()
 
     flash('Reservation canceled successfully!', 'success')
-    return redirect(url_for('reservation_history'))
+    return redirect(url_for('admin_panel'))
 
 # Customer login route
 @app.route('/customer_login', methods=['GET', 'POST'])
