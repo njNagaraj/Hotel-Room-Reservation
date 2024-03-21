@@ -1,17 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <title>Reservation Details</title>
-</head>
-
-<body>
+{% extends "base_layout.html" %}
+{% block content %}
 
     <div class="container mt-4">
+        {% include 'flash_message.html' %}
         <h1>Reservation Details</h1>
 
         <table class="table mt-4">
@@ -39,18 +30,12 @@
             </tbody>
         </table>
 
-        <form action="{{ url_for('cancel_reservation', reservation_id=reservation.id) }}" method="post">
+        <form action="{{ url_for('customer.cancel_reservation', reservation_id=reservation.id) }}" method="post">
             <button type="submit" class="btn btn-danger">Cancel Reservation</button>
         </form>
 
-        <a href="{{ url_for('reservation_history') }}" class="btn btn-primary mt-3">View Reservations</a>
-        
-        <form action="{{ url_for('user_logout') }}" method="post">
-            <button type="submit" class="btn btn-secondary mt-3">Logout</button>
-        </form>
+        <a href="{{ url_for('customer.reservation_history') }}" class="btn btn-primary mt-3">View Reservations</a>
 
     </div>
 
-</body>
-
-</html>
+{% endblock %}

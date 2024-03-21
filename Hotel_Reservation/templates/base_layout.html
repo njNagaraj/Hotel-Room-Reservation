@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if title %}
+    <title>{{ title }}</title>
+    {% else %}
+    <title>Hotel Booking</title>
+    {% endif %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nav_bar.css') }}">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Hotel Reservation</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            {% if current_user.is_authenticated %}
+              <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('customer.user_logout')}}">Logout</a>
+              </li>
+            <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('customer.reservation_history')}}">My Reservations</a>
+            </li>
+                  {% else %}
+            <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('customer.login')}}">Customer Login</a>
+            </li>
+            <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('customer.sign_up')}}">Customer Sign Up</a>
+              </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('admin.admin_login')}}">Admin Login</a>
+            </li>
+            {% endif %}
+          </ul>
+      </div>
+  </nav>
+  {% block content %} {% endblock %}
+
+  <!-- Footer -->
+  <footer class="footer bg-dark text-white mt-5 py-4">
+      <div class="container">
+          <div class="row">
+              <div class="col-lg-4 col-md-6">
+                  <h5>About Us</h5>
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer rutrum lorem ac magna
+                      sollicitudin, vitae fermentum orci lacinia.</p>
+              </div>
+              <div class="col-lg-4 col-md-6">
+                  <h5>Contact Us</h5>
+                  <p>Email: info@example.com</p>
+                  <p>Phone: +123456789</p>
+              </div>
+              <div class="col-lg-4 col-md-12">
+                  <h5>Address</h5>
+                  <p>123 Main Street</p>
+                  <p>City, Country</p>
+              </div>
+          </div>
+          <div class="row mt-4">
+              <div class="col text-center">
+                  <p>&copy; 2024 by NJ. All rights reserved.</p>
+              </div>
+          </div>
+      </div>
+  </footer>
+  <!-- End Footer -->
+
+
+</body>
