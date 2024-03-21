@@ -22,12 +22,12 @@ def admin_login():
             print("Incorrect credentials")
             flash('Incorrect username or password.', 'danger')
     # Pass is_admin as False by default
-    return render_template('admin_login.html', title="Admin Login", form=form)
+    return render_template('admin/admin_login.html', title="Admin Login", form=form)
 
 @admin.route('/admin_panel')
 def admin_panel():
     form = AddRoomForm()
-    return render_template('admin_panel.html', form=form, rooms=Room.query.all(), reservations=Reservation.query.all(), title="Admin Panel")
+    return render_template('rooms/view_rooms.html', form=form, rooms=Room.query.all(), reservations=Reservation.query.all(), title="Admin Panel")
 
 # Add room route
 @admin.route('/admin/add_room', methods=['GET', 'POST'])
@@ -46,7 +46,7 @@ def add_room():
         db.session.commit()
         flash('Room added successfully!', 'success')
         return redirect(url_for('admin.admin_panel'))
-    return render_template('add_room.html', form=form)
+    return render_template('admin/add_room.html', form=form)
 
 # Edit room route
 @admin.route('/admin/edit_room/<int:room_id>', methods=['GET', 'POST'])
@@ -58,7 +58,7 @@ def edit_room(room_id):
         db.session.commit()
         flash('Room updated successfully!', 'success')
         return redirect(url_for('admin.admin_panel'))
-    return render_template('edit_room.html', form=form, room=room, title="Edit Room")
+    return render_template('rooms/edit_room.html', form=form, room=room, title="Edit Room")
 
 # Delete room route
 @admin.route('/admin/delete_room/<int:room_id>', methods=['POST'])
@@ -69,11 +69,25 @@ def delete_room(room_id):
     flash('Room deleted successfully!', 'success')
     return redirect(url_for('admin.admin_panel'))
 
+#admin view rooms
+@admin.route('/admin/view_rooms')
+def view_rooms():
+    rooms = Room.query.all()
+    return render_template('rooms/view_rooms.html', rooms=rooms, title="View Rooms")
+
+#all reservations
+@admin.route('/admin/all_reservations')
+def all_reservations():
+    reservations = Reservation.query.all()
+    return render_template('admin/all_reservations.html', reservations=reservations, title="All Reservation")
+
 # admin logout route
-@admin.route('/admin_logout', methods=['POST'])
+@admin.route('/admin_logout', methods=['POST', 'GET'])
 def admin_logout():
     logout_user()
     flash('You have been logged out.', 'success')
     return redirect(url_for('main_page.main'))
+
+
 
 

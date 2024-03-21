@@ -1,4 +1,4 @@
-{% extends "base_layout.html" %}
+{% extends "main/base_layout.html" %}
 {% block content %}
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -9,7 +9,7 @@
                     </div>
                     <div class="card-body">
                         <!-- Flash Messages -->
-                        {% include 'flash_message.html' %}
+                        {% include 'main/flash_message.html' %}
                         <!-- End Flash Messages -->
 
                         <form method="POST" action="{{ url_for('admin.admin_login') }}">

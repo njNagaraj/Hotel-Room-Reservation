@@ -1,0 +1,37 @@
+{% extends "main/admin_base_layout.html" %}
+{% block content %}
+    <div class="container mt-4">
+    <h2 class="mt-4">Reservations</h2>
+
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th scope="col">Reservation ID</th>
+                <th scope="col">Guest Name</th>
+                <th scope="col">Check-In Date</th>
+                <th scope="col">Check-Out Date</th>
+                <th scope="col">Room Number</th> <!-- Changed "Room ID" to "Room Number" -->
+                <th scope="col">Actions</th> <!-- Added Actions column -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for reservation in reservations %}
+            <tr>
+                <th scope="row">{{ reservation.id }}</th>
+                <td>{{ reservation.guest_name }}</td>
+                <td>{{ reservation.check_in_date }}</td>
+                <td>{{ reservation.check_out_date }}</td>
+                <td>{{ reservation.room.room_number }}</td> <!-- Changed to display room number -->
+                <td>
+                    <form action="{{ url_for('customer.cancel_reservation', reservation_id=reservation.id) }}" method="post" style="display: inline;">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+{% endblock %}

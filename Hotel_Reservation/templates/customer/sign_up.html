@@ -1,4 +1,4 @@
-{% extends "base_layout.html" %}
+{% extends "main/base_layout.html" %}
 {% block content %}
 
   <div class="container mt-5">
@@ -9,7 +9,7 @@
                       <h3 class="text-center">Sign Up</h3>
                   </div>
                   <div class="card-body">
-                    {% include 'flash_message.html' %}
+                    {% include 'main/flash_message.html' %}
                     <form action="{{ url_for('customer.sign_up') }}" method="POST"> 
                         {{ form.hidden_tag() }}
                         <div class="form-group">

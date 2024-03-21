@@ -30,7 +30,7 @@ def sign_up():
         db.session.commit()
         flash('Account created successfully! Please login.', 'success')
         return redirect(url_for('customer.login'))
-    return render_template('sign_up.html', form=form, title="Sign Up")
+    return render_template('customer/sign_up.html', form=form, title="Sign Up")
 
 @customer.route('/login', methods=['GET', 'POST'])
 def login():
@@ -54,7 +54,7 @@ def login():
         else:
               flash("Username not found. Please create an account first.", 'danger')
 
-    return render_template('login.html', title="Login", form=form)
+    return render_template('customer/login.html', title="Login", form=form)
 
 @customer.route('/reservation_form', methods=['GET', 'POST'])
 @login_required
@@ -114,7 +114,7 @@ def reservation_form():
 @login_required
 def view_reservation(reservation_id):
     reservation = Reservation.query.get_or_404(reservation_id)
-    return render_template('view_reservation.html', reservation=reservation, title="Reservation Details")
+    return render_template('customer/view_reservation.html', reservation=reservation, title="Reservation Details")
 
 # Reservation history route with comments
 @customer.route('/reservation/history')
@@ -124,7 +124,7 @@ def reservation_history():
         customer = Customer.query.filter_by(username=current_user.username).first()
         if customer:
             reservations = Reservation.query.filter_by(customer_id=customer.id).all()
-            return render_template('reservation_history.html', reservations=reservations, title="Reservation History")
+            return render_template('customer/reservation_history.html', reservations=reservations, title="Reservation History")
         else:
             flash('User not found.', 'danger')
             return redirect(url_for('customer.login', next=request.url)) 
@@ -138,8 +138,8 @@ def cancel_reservation(reservation_id):
     reservation = Reservation.query.get_or_404(reservation_id)
     db.session.delete(reservation)
     db.session.commit()
-    flash('Reservation canceled successfully!', 'success')
-    return redirect(url_for('customer.reservation_history'))
+    flash('Reservation canceled successfully! {reservation_id}', 'success')
+    return render_template('customer/reservation_history.html')
   
 # User logout route
 @customer.route('/user_logout')

@@ -1,0 +1,38 @@
+{% extends "main/admin_base_layout.html" %}
+{% block content %}
+
+<div class="container mt-4">
+        <!-- Flash Messages -->
+        {% include 'main/flash_message.html' %}
+        <!-- End Flash Messages -->
+
+      <h2 class="mt-4">Rooms</h2>
+      <table class="table mt-3">
+          <thead>
+              <tr>
+                  <th scope="col">Room ID</th>
+                  <th scope="col">Room Number</th>
+                  <th scope="col">Amenities</th>
+                  <th scope="col">Capacity</th> <!-- Added Capacity column -->
+                  <th scope="col">Actions</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for room in rooms %}
+              <tr>
+                  <th scope="row">{{ room.id }}</th>
+                  <td>{{ room.room_number }}</td>
+                  <td>{{ room.amenities }}</td>
+                  <td>{{ room.capacity }}</td> <!-- Display Capacity -->
+                  <td>
+                      <a href="{{ url_for('admin.edit_room', room_id=room.id) }}" class="btn btn-primary btn-sm">Edit</a>
+                      <form action="{{ url_for('admin.delete_room', room_id=room.id) }}" method="post" style="display: inline;">
+                          <input type="hidden" name="_method" value="DELETE">
+                          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                      </form>
+                  </td>
+              </tr>
+          </tbody>
+      </table>
+
+  {% endblock %}
