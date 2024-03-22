@@ -1,7 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, current_user, login_required
 from .forms import SignUpForm, LoginForm
-from Hotel_Reservation.rooms.forms import ReservationForm
 from Hotel_Reservation.models import Room, Reservation, Customer
 from datetime import datetime
 from Hotel_Reservation import bcrypt, db
