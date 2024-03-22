@@ -37,9 +37,11 @@ As an admin, I can view a list of reservations and cancel reservations if needed
 
 Flask
 
-SQL Alchemy
+SQL Alchemy for interacting with db
 
-sqlite
+sqlite for database
+
+flask login for login functinalities
 
 
 # To run in cmd
