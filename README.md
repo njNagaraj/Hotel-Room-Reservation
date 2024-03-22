@@ -42,6 +42,8 @@ Handled all the erorr cases and a fully functional website working situations
 
 To run the application from the command line:
 
+Install Git and Python before proceed git-https://git-scm.com/downloads and python-https://www.python.org/downloads/
+
 1. Clone the repository:
     ```
     git clone https://github.com/njNagaraj/Hotel-room-reservation.git
