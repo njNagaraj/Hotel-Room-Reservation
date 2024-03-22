@@ -33,9 +33,9 @@ def sign_up():
 
 @customer.route('/login', methods=['GET', 'POST'])
 def login():
+    form = LoginForm()
     if current_user.is_authenticated:
         return redirect(url_for('rooms.index'))
-    form = LoginForm()
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
@@ -52,8 +52,9 @@ def login():
                   flash("Incorrect password. Please try again.", 'danger')
         else:
               flash("Username not found. Please create an account first.", 'danger')
+              return redirect(url_for('customer.sign_up'))
 
-    return render_template('customer/sign_up.html', title="Login", form=form)
+    return render_template('customer/login.html', title="Login", form=form)
 
 @customer.route('/reservation_form', methods=['GET', 'POST'])
 @login_required
