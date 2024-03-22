@@ -88,7 +88,7 @@ def cancel_reservation(reservation_id):
     db.session.delete(reservation)
     db.session.commit()
     flash('Reservation canceled successfully!', 'success')
-    return render_template('admin/all_reservation.html')
+    return render_template('admin/all_reservations.html')
 
 # admin logout route
 @admin.route('/admin_logout', methods=['POST', 'GET'])
