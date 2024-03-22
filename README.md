@@ -9,6 +9,13 @@ The code is perfectly organised with template inheritance, Packages and Blueprin
 
 Handled all the erorr cases and a fully functional website working situations
 
+## Tools Used
+
+- Flask
+- SQL Alchemy for database interaction
+- SQLite for database management
+- Flask Login for authentication and more small packages for other functionalities.
+
 ## Functionality
 
 ### Customer
@@ -30,13 +37,6 @@ Handled all the erorr cases and a fully functional website working situations
 - **View Reservations**: Admins can view a list of reservations and cancel reservations if needed. 
 
 - **Admin Login**: Admins can log in with their credentials (username: admin, password: admin) to access the admin functionalities.
-
-## Tools Used
-
-- Flask
-- SQL Alchemy for database interaction
-- SQLite for database management
-- Flask Login for authentication and more small packages for other functionalities.
 
 ## Running the Application
 
