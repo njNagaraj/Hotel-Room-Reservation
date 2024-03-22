@@ -5,6 +5,10 @@ The goal of this project is to create a simple yet efficient hotel reservation s
 
 Upon the initial launch of the application, only one demo room will be created with room number 101. Additional rooms can be added by logging in as an admin using the username "admin" and password "admin".
 
+The code is perfectly organised with template inheritance, Packages and Blueprints.
+
+Handled all the erorr cases and a fully functional website working situations
+
 ## Functionality
 
 ### Customer
@@ -32,7 +36,7 @@ Upon the initial launch of the application, only one demo room will be created w
 - Flask
 - SQL Alchemy for database interaction
 - SQLite for database management
-- Flask Login for authentication
+- Flask Login for authentication and more small packages for other functionalities.
 
 ## Running the Application
 
