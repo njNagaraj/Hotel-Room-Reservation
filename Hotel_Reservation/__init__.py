@@ -7,23 +7,26 @@ from Hotel_Reservation.config import Config
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
-login_manager.login_view = 'customer.login'
-login_manager.login_message_category = 'info'
+login_manager.login_view = 'customer.login' # for login session management
+login_manager.login_message_category = 'info' 
 
 def create_app(config_class=Config):
   app = Flask(__name__)
   app.config.from_object(Config)
 
+  # Initialize Flask extensions
   db.init_app(app)
   bcrypt.init_app(app)
   login_manager.init_app(app)
 
+  # import blueprints
   from Hotel_Reservation.customer.routes import customer
   from Hotel_Reservation.admin.routes import admin
   from Hotel_Reservation.main.routes import main_page
   from Hotel_Reservation.rooms.routes import rooms
   from Hotel_Reservation.errors.handlers import errors
-  
+
+  # Register blueprints
   app.register_blueprint(customer)
   app.register_blueprint(admin)
   app.register_blueprint(main_page)

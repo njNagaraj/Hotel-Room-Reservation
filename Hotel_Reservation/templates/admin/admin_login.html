@@ -1,3 +1,4 @@
+<!-- importing base layout using layout inheritance -->
 {% extends "main/base_layout.html" %}
 {% block content %}
     <div class="container mt-5">
@@ -11,7 +12,6 @@
                         <!-- Flash Messages -->
                         {% include 'main/flash_message.html' %}
                         <!-- End Flash Messages -->
-
                         <form method="POST" action="{{ url_for('admin.admin_login') }}">
                           {{ form.hidden_tag() }}  {# Include CSRF token #}
                           <div class="form-group">

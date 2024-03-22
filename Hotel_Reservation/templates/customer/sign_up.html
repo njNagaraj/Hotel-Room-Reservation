@@ -1,3 +1,4 @@
+<!-- importing base layout using layout inheritance -->
 {% extends "main/base_layout.html" %}
 {% block content %}
 
@@ -24,7 +25,6 @@
                             {% else %}
                                 {{ form.username(class="form-control form-control-lg") }}
                             {% endif %}
-                            
                         </div>
                         <div class="form-group">
                             {{ form.email.label(class="form-control-label") }}  
@@ -38,7 +38,6 @@
                             {% else %}
                                 {{ form.email(class="form-control form-control-lg") }}
                             {% endif %}
-                          
                         </div>
                         <div class="form-group">
                             {{ form.password.label(class="form-control-label") }}  

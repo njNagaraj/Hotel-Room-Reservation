@@ -21,15 +21,15 @@ def admin_login():
         else:
             print("Incorrect credentials")
             flash('Incorrect username or password.', 'danger')
-    # Pass is_admin as False by default
     return render_template('admin/admin_login.html', title="Admin Login", form=form)
 
+# admin index panel
 @admin.route('/admin_panel')
 def admin_panel():
     form = AddRoomForm()
     return render_template('rooms/view_rooms.html', form=form, rooms=Room.query.all(), reservations=Reservation.query.all(), title="Admin Panel")
 
-# Add room route
+# add room route
 @admin.route('/admin/add_room', methods=['GET', 'POST'])
 def add_room():
     form = AddRoomForm()
@@ -81,7 +81,7 @@ def all_reservations():
     reservations = Reservation.query.all()
     return render_template('admin/all_reservations.html', reservations=reservations, title="All Reservation")
 
-#admin cancelreservation
+# admin cancel reservation
 @admin.route('/ressdfdservation/cancel/<int:reservation_id>', methods=['POST'])
 def cancel_reservation(reservation_id):
     reservation = Reservation.query.get_or_404(reservation_id)

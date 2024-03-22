@@ -1,9 +1,9 @@
+<!-- importing base layout using layout inheritance -->
 {% extends "main/base_layout.html" %}
 {% block content %}
 
 <div class="container mt-4">
     <h1>Edit Room</h1>
-
     <form action="{{ url_for('admin.edit_room', room_id=room.id) }}" method="post" class="mt-4">
         {{ form.csrf_token }}
         <div class="form-group">

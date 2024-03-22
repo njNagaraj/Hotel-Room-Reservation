@@ -7,7 +7,7 @@ from Hotel_Reservation import bcrypt, db
 
 customer = Blueprint('customer', __name__)
 
-# New customer route
+# New customer signup route
 @customer.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
     if current_user.is_authenticated:
@@ -22,7 +22,7 @@ def sign_up():
         if password != confirm_password:
             flash('Passwords do not match. Please try again.', 'danger')
             return redirect(url_for('customer.sign_up'))
-
+        # dehashing password and cheking password is correct
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         new_customer = Customer(username=username, email=email, password=hashed_password)
         db.session.add(new_customer)
@@ -31,6 +31,7 @@ def sign_up():
         return redirect(url_for('customer.login'))
     return render_template('customer/sign_up.html', form=form, title="Sign Up")
 
+# Customer login route
 @customer.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -59,56 +60,51 @@ def login():
 @customer.route('/reservation_form', methods=['GET', 'POST'])
 @login_required
 def reservation_form():
-        if not current_user.is_authenticated:
+    if not current_user.is_authenticated:
+        return redirect(url_for('customer.login'))
+      
+    if request.method == 'POST':
+        # Getting form data
+        guest_name = request.form['guest_name']
+        check_in_date_str = request.form['check_in_date']
+        check_out_date_str = request.form['check_out_date']
+        room_id = request.form['room_id']
+
+        room = Room.query.get(room_id)
+        # Parse dates
+        check_in_date = datetime.strptime(check_in_date_str, '%Y-%m-%d').date()
+        check_out_date = datetime.strptime(check_out_date_str, '%Y-%m-%d').date()
+
+        # Check if end date is greater than start date
+        if check_out_date <= check_in_date:
+            flash("End date must be greater than start date.", "danger")
+            return redirect(url_for('rooms.room_details', room_id=room_id))
+
+        # Check if the room is available for the provided dates
+        if room:
+            reservations = Reservation.query.filter_by(room_id=room_id).all()
+            for reservation in reservations:
+                if (check_in_date >= reservation.check_in_date and check_in_date <= reservation.check_out_date) or \
+                   (check_out_date >= reservation.check_in_date and check_out_date <= reservation.check_out_date):
+                    flash("This room is already booked for the selected dates.", "danger")
+                    return redirect(url_for('rooms.room_details', room_id=room_id))
+        else:
+            flash("Room not found.", "danger")
+            return redirect(url_for('rooms.room_details', room_id=room_id ))
+
+        # Make the reservation
+        customer = Customer.query.filter_by(username=current_user.username).first()
+        if customer:
+            reservation = Reservation(guest_name=guest_name, check_in_date=check_in_date, check_out_date=check_out_date, room_id=room_id, customer_id=customer.id)
+            db.session.add(reservation)
+            db.session.commit()
+            flash("Reservation made successfully!", "success")
+            return redirect(url_for('customer.view_reservation', reservation_id=reservation.id))
+        else:
+            flash('User not found.', 'danger')
             return redirect(url_for('customer.login'))
-        if request.method == 'POST':
-            # Check if the user is logged in
 
-            # Get form data
-            guest_name = request.form['guest_name']
-            check_in_date_str = request.form['check_in_date']
-            check_out_date_str = request.form['check_out_date']
-            room_id = request.form['room_id']
-
-            room = Room.query.get(room_id)
-            # Parse dates
-
-            check_in_date = datetime.strptime(check_in_date_str, '%Y-%m-%d').date()
-            check_out_date = datetime.strptime(check_out_date_str, '%Y-%m-%d').date()
-
-
-            # Check if end date is greater than start date
-            if check_out_date <= check_in_date:
-                flash("End date must be greater than start date.", "danger")
-                return redirect(url_for('rooms.room_details', room_id=room_id))
-
-            # Check if the room is available for the provided dates
-            if room:
-                reservations = Reservation.query.filter_by(room_id=room_id).all()
-                for reservation in reservations:
-                    if (check_in_date >= reservation.check_in_date and check_in_date <= reservation.check_out_date) or \
-                       (check_out_date >= reservation.check_in_date and check_out_date <= reservation.check_out_date):
-                        flash("This room is already booked for the selected dates.", "danger")
-                        return redirect(url_for('rooms.room_details', room_id=room_id))
-            else:
-                flash("Room not found.", "danger")
-                return redirect(url_for('rooms.room_details', room_id=room_id ))
-
-            # Make the reservation
-
-  
-            customer = Customer.query.filter_by(username=current_user.username).first()
-            if customer:
-                reservation = Reservation(guest_name=guest_name, check_in_date=check_in_date, check_out_date=check_out_date, room_id=room_id, customer_id=customer.id)
-                db.session.add(reservation)
-                db.session.commit()
-                flash("Reservation made successfully!", "success")
-                return redirect(url_for('customer.view_reservation', reservation_id=reservation.id))
-            else:
-                flash('User not found.', 'danger')
-                return redirect(url_for('customer.login'))
-
-        return render_template('rooms.room_details', room=Room.query.all())
+    return render_template('rooms.room_details', room=Room.query.all())
 
 @customer.route('/reservation/<int:reservation_id>')
 @login_required
@@ -116,7 +112,7 @@ def view_reservation(reservation_id):
     reservation = Reservation.query.get_or_404(reservation_id)
     return render_template('customer/view_reservation.html', reservation=reservation, title="Reservation Details")
 
-# Reservation history route with comments
+# Reservation history route 
 @customer.route('/reservation/history')
 @login_required
 def reservation_history():
@@ -145,6 +141,5 @@ def cancel_reservation(reservation_id):
 @customer.route('/user_logout')
 def user_logout():
     logout_user()
-    #session.pop('logged_in_user', None)
     flash('You have been logged out.', 'success')
     return redirect(url_for('main_page.main'))

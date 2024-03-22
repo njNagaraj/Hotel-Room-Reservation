@@ -1,11 +1,10 @@
+<!-- importing base layout using layout inheritance -->
 {% extends "main/base_layout.html" %}
 {% block content %}
 
     {% include 'main/flash_message.html' %}
-
     <div class="container mt-4">
         <h1>Room Details</h1>
-
         <div class="card mt-4">
             <img src="{{ url_for('static', filename='images/room_101.jpg') }}" class="card-img-top" alt="Room Image">
             <div class="card-body">
@@ -15,7 +14,6 @@
         </div>
 
         <h2 class="mt-4">Make a Reservation</h2>
-
       <form action="{{ url_for('customer.reservation_form') }}" method="post" class="mt-3">
           <div class="form-group">
               <label for="guest_name">Guest Name:</label>

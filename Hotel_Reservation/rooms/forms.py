@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DateField, HiddenField
-from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
-from Hotel_Reservation.models import Customer
+from wtforms import StringField, SubmitField, DateField, HiddenField
+from wtforms.validators import DataRequired
 
+# Reservation form
 class ReservationForm(FlaskForm):
   guest_name = StringField('Guest Name', validators=[DataRequired()])
   check_in_date = DateField('Check-in Date', format='%Y-%m-%d', validators=[DataRequired()])

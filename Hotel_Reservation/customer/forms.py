@@ -10,11 +10,13 @@ class SignUpForm(FlaskForm):
   confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
   submit = SubmitField('Sign Up')
 
+  # Custom validation for username
   def validate_username(self, username):
       existing_user = Customer.query.filter_by(username=username.data).first()
       if existing_user:
           raise ValidationError('Username already exists. Please choose a different username.')
 
+  # Custom validation for email
   def validate_email(self, email):
       existing_email = Customer.query.filter_by(email=email.data).first()
       if existing_email:

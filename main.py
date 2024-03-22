@@ -2,10 +2,10 @@ from Hotel_Reservation import create_app
 from Hotel_Reservation.models import Room
 from Hotel_Reservation import db
 
-# Create the Flask application instance
+# Flask application instance
 app = create_app()
 
-# Create database tables and add sample data within the application context
+# database tables and add sample data within the application context
 with app.app_context():
     # Create database tables
     db.create_all()

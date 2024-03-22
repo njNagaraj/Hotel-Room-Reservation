@@ -1,10 +1,9 @@
+<!-- importing base layout using layout inheritance -->
 {% extends "main/base_layout.html" %}
 {% block content %}
-
     <div class="container mt-4">
         {% include 'main/flash_message.html' %}
         <h1>Reservation Details</h1>
-
         <table class="table mt-4">
             <tbody>
                 <tr>
@@ -29,13 +28,10 @@
                 </tr>
             </tbody>
         </table>
-
         <form action="{{ url_for('customer.cancel_reservation', reservation_id=reservation.id) }}" method="post">
             <button type="submit" class="btn btn-danger">Cancel Reservation</button>
         </form>
-
         <a href="{{ url_for('customer.reservation_history') }}" class="btn btn-primary mt-3">View Reservations</a>
-
     </div>
 
 {% endblock %}
