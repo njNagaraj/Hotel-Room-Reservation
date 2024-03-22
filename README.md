@@ -7,7 +7,7 @@ all functionalities will work perfectly.
 
 not designed too much as made simple as possible
 
-at first hen running the application only one demo room will be created with room no 101 you can add multiple rooms by logging into admin login option using username = admin and password = admin.
+at first when running the application for the first time only one demo room will be created with room no 101 you can add multiple rooms by logging into admin login option using username = admin and password = admin.
 
 # Functionality
 Customer
