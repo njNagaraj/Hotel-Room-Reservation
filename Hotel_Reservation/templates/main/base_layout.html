@@ -23,11 +23,14 @@
         <ul class="navbar-nav ml-auto">
             {% if current_user.is_authenticated %}
               <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('rooms.index')}}">Home</a>
+              </li>
+              <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('customer.reservation_history')}}">My Reservations</a>
+              </li>
+              <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('customer.user_logout')}}">Logout</a>
               </li>
-            <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('customer.reservation_history')}}">My Reservations</a>
-            </li>
                   {% else %}
             <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('customer.login')}}">Customer Login</a>
