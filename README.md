@@ -3,6 +3,10 @@
 # Overview
 The goal of this project is to create a hotel reservation system that allows customers to search for available rooms and make reservations.
 
+all functionalities will work perfectly.
+
+not designed too much as made simple as possible
+
 # Functionality
 Customer
 
