@@ -62,7 +62,7 @@ To run the application from the command line:
     flask --app main run
     ```
 
-if any error happens wgile cloning the repo just download the zip and extract and go to the project directory and run the above point 3 and 4
+if any error happens while cloning the repo just download the zip and extract and go to the project directory and execute the above point 3 and 4 comments
 
 ## Note
 
