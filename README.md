@@ -14,7 +14,9 @@ Handled all the erorr cases and a fully functional website working situations
 - Flask
 - SQL Alchemy for database interaction
 - SQLite for database management
-- Flask Login for authentication and more small packages for other functionalities.
+- Flask Login for authentication
+- Bcrypt for hashing and dehashing passwords
+- flask-WTF to create form as python classes
 
 ## Functionality
 
