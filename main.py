@@ -9,15 +9,14 @@ app = create_app()
 with app.app_context():
     # Create database tables
     db.create_all()
-
-    # Check if sample room exists, if not, add it to the database
-    room_number = 101
-    existing_room = Room.query.filter_by(room_number=room_number).first()
-
-    if not existing_room:
-        sample_room = Room(room_number=room_number, amenities='Free Wi-Fi', capacity=2)
-        db.session.add(sample_room)
-        db.session.commit()
+    # creating three rooms at first
+    room_numbers = [101, 102, 103]
+    existing_rooms = Room.query.filter(Room.room_number.in_(room_numbers)).all()
+    for room_number in room_numbers:
+        if not any(room.room_number == room_number for room in existing_rooms):
+            sample_room = Room(room_number=room_number, amenities='Free Wi-Fi', capacity=2)
+            db.session.add(sample_room)
+    db.session.commit()
 
 # Run the Flask application
 if __name__ == '__main__':
