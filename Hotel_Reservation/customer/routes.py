@@ -47,14 +47,14 @@ def login():
               if bcrypt.check_password_hash(hashed_password, password):
                   login_user(customer)
                   next_page = request.args.get('next')
-                  #flash("Your login was successful!", "success")
+                  flash("Your login was successful!", "success")
                   return redirect(next_page) if next_page else redirect(url_for('rooms.index'))
               else:
                   flash("Incorrect password. Please try again.", 'danger')
         else:
               flash("Username not found. Please create an account first.", 'danger')
 
-    return render_template('customer/login.html', title="Login", form=form)
+    return render_template('customer/sign_up.html', title="Login", form=form)
 
 @customer.route('/reservation_form', methods=['GET', 'POST'])
 @login_required
