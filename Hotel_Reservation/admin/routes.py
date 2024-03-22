@@ -81,6 +81,15 @@ def all_reservations():
     reservations = Reservation.query.all()
     return render_template('admin/all_reservations.html', reservations=reservations, title="All Reservation")
 
+#admin cancelreservation
+@admin.route('/ressdfdservation/cancel/<int:reservation_id>', methods=['POST'])
+def cancel_reservation(reservation_id):
+    reservation = Reservation.query.get_or_404(reservation_id)
+    db.session.delete(reservation)
+    db.session.commit()
+    flash('Reservation canceled successfully!', 'success')
+    return render_template('admin/all_reservation.html')
+
 # admin logout route
 @admin.route('/admin_logout', methods=['POST', 'GET'])
 def admin_logout():

@@ -138,8 +138,8 @@ def cancel_reservation(reservation_id):
     reservation = Reservation.query.get_or_404(reservation_id)
     db.session.delete(reservation)
     db.session.commit()
-    flash('Reservation canceled successfully! {reservation_id}', 'success')
-    return render_template('customer/reservation_history.html')
+    flash('Reservation canceled successfully!', 'success')
+    return redirect(url_for('customer.reservation_history'))
   
 # User logout route
 @customer.route('/user_logout')
