@@ -3,7 +3,7 @@
 ## Overview
 The goal of this project is to create a simple yet efficient hotel reservation system that enables customers to search for available rooms and make reservations hassle-free.
 
-Upon the initial launch of the application, only one demo room will be created with room number 101 with default image. Additional rooms can be added by logging in as an admin using the username "admin" and password "admin". (if further rooms are created all rooms will have same image for now)
+Upon the initial launch of the application, three demo room will be created with room number 101, 102, 103 with default image with same details. Additional rooms can be added by logging in as an admin using the username "admin" and password "admin". (if further rooms are created all rooms will have same image for now)
 
 The code is perfectly organised with template inheritance, Packages and Blueprints.
 
