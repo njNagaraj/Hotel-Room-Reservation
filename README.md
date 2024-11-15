@@ -1,5 +1,7 @@
 # Hotel Reservation System
 
+![Project Logo](./Hotel_Reservation/static/images/room_101.jpg)
+
 ## Overview
 The goal of this project is to create a simple yet efficient hotel reservation system that enables customers to search for available rooms and make reservations hassle-free.
 
